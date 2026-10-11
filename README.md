@@ -216,7 +216,7 @@ Category      : Denial of Service (DoS)
 ## 8. Simulation Framework Implementation & Execution Guide
 
 With the system architecture and theoretical foundation established, the next phase is building the simulator:
-1. **Set up the ns-3 simulation script (`nids_sim.cc`)**: Configure the nodes, channels, applications, and attack injection.
+1. **Set up the ns-3 simulation script (`nids_sim.py`)**: Configure the nodes, channels, applications, and attack injection.
 2. **Build the PCAP-to-Flow Extractor (`flow_extractor.py`)**: Convert ns-3 `.pcap` packets into flow records matching the model features.
 3. **Build the Live Inference & SHAP Visualizer (`nids_detector.py`)**: Ingest simulated flows, output predictions, and generate visual SHAP attribution plots.
 
@@ -260,7 +260,7 @@ python run_simulation_demo.py
 To run the simulation in a dedicated ns-3 environment:
 ```bash
 # Copy C++ script to ns-3 scratch directory
-cp simulation/nids_sim.cc /path/to/ns-allinone-3.x/ns-3.x/scratch/
+cp simulation/nids_sim.py /path/to/ns-allinone-3.x/ns-3.x/scratch/
 
 # Build and execute via ns-3 Waf / CMake
 ./ns3 run scratch/nids_sim
