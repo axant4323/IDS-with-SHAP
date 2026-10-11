@@ -1,10 +1,16 @@
 # X-NIDS: Explainable Network Intrusion Detection System with ns-3 Simulation
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
-[![Machine Learning](https://img.shields.io/badge/Models-XGBoost%20%7C%20LightGBM%20%7C%20Random%20Forest-orange.svg)]()
+[![Machine Learning](https://img.shields.io/badge/Models-XGBoost%20%7C%20LightGBM-orange.svg)]()
 [![Explainable AI](https://img.shields.io/badge/XAI-SHAP%20TreeExplainer-green.svg)]()
-[![Simulation](https://img.shields.io/badge/Simulator-ns--3-red.svg)](https://www.nsnam.org/)
-[![Dataset](https://img.shields.io/badge/Dataset-UNSW--NB15-purple.svg)]()
+[![Simulation](https://img.shields.io/badge/Simulator-Pure%20Python%20%2F%20ns--3-red.svg)](https://www.nsnam.org/)
+[![Roadmap Progress](https://img.shields.io/badge/Roadmap%20Progress-43.6%25%20Completed-brightgreen.svg)](PROJECT_ROADMAP.md)
+[![Team Checklist](https://img.shields.io/badge/Partner%20Checklist-Active%20CLI-purple.svg)](PROJECT_ROADMAP.md)
+
+---
+
+> 🚀 **TEAM COLLABORATION & IMPLEMENTATION STATUS**:
+> Phases 1–3 are complete and validated end-to-end. Project partners can run `python check_progress.py` from their terminal to view real-time completion metrics and see immediately actionable pending tasks. Full task breakdown is available in [`PROJECT_ROADMAP.md`](PROJECT_ROADMAP.md).
 
 ---
 
@@ -12,7 +18,7 @@
 
 **X-NIDS** is an end-to-end, research-grade Network Intrusion Detection System designed for real-time traffic classification and explainability. It bridges the gap between static machine learning models and dynamic network environments by coupling:
 1. **A State-of-the-Art ML/Ensemble Detection Engine**: Engineered domain-specific network flow features, cost-sensitive power class weighting to rescue minority attacks, and a calibrated soft-voting ensemble combining **XGBoost** and **LightGBM**.
-2. **ns-3 Network Simulation**: A realistic, multi-node packet-level simulator in **ns-3** generating live benign network operations (HTTP, FTP, Ping) and cyberattacks (TCP SYN Flood, Port Scanning, UDP Storm).
+2. **Pure Python & ns-3 Network Simulation**: A multi-node packet-level simulator generating live benign network operations (HTTP, FTP, Ping) and cyberattacks (TCP SYN Flood, Port Scanning, UDP Storm) with 100% pure Python execution and optional native ns-3 integration.
 3. **Flow-Level Explainable AI (SHAP)**: A transparency engine generating instant, human-readable Shapley attribution cards for Security Operations Center (SOC) analysts to understand *why* any flow was flagged as malicious.
 
 ---
@@ -202,35 +208,54 @@ Category      : Denial of Service (DoS)
 
 ```
 /home/akshant/finalyear/
+├── PROJECT_ROADMAP.md            <-- Comprehensive Phase 1-7 plan with task checklists
+├── check_progress.py             <-- Interactive CLI progress tracker & task dashboard
 ├── README.md                     <-- System architecture & research blueprint
 ├── Untitled.ipynb                <-- Complete, executed 71-cell ML & evaluation notebook
 ├── Untitled_backup.ipynb         <-- Clean backup of original notebook
 ├── convert_parquet_to_csv.py     <-- Clean conversion utility
 ├── input.parquet                 <-- UNSW-NB15 base parquet dataset
 ├── output.csv                    <-- Extracted dataset (82,332 records)
-└── venv/                         <-- Python 3.12 virtual environment (LightGBM, XGBoost, SHAP)
+│
+├── simulation/                   <-- Pure Python network traffic synthesis
+│   ├── traffic_generator.py      <-- Multi-vector attack & benign packet synthesizer
+│   └── nids_sim.py               <-- Python simulation engine (Scapy + ns-3 bindings)
+│
+├── engine/                       <-- Intrusion detection and XAI core
+│   ├── flow_extractor.py         <-- PCAP to bidirectional NetFlow converter (UNSW-NB15 schema)
+│   ├── train_and_save_model.py   <-- Trains and serializes XGBoost + LightGBM ensemble
+│   └── nids_detector.py          <-- Real-time inference (~109µs) & SHAP TreeExplainer cards
+│
+├── model_artifacts/              <-- Serialized models & preprocessing pipelines
+│   ├── xgb_multi.joblib          <-- Optimized XGBoost model
+│   ├── lgb_multi.joblib          <-- Optimized LightGBM model
+│   └── preprocessor.joblib       <-- Frequency encoding & scaling pipeline
+│
+├── shap_alerts/                  <-- High-resolution SHAP attribution alert plots
+├── simulated_traffic.pcap        <-- Synthesized multi-node traffic trace
+├── run_simulation_demo.py        <-- One-click end-to-end pipeline orchestrator
+└── venv/                         <-- Python 3.12 virtual environment
 ```
-
----
-
-## 8. Simulation Framework Implementation & Execution Guide
-
-With the system architecture and theoretical foundation established, the next phase is building the simulator:
-1. **Set up the ns-3 simulation script (`nids_sim.py`)**: Configure the nodes, channels, applications, and attack injection.
-2. **Build the PCAP-to-Flow Extractor (`flow_extractor.py`)**: Convert ns-3 `.pcap` packets into flow records matching the model features.
-3. **Build the Live Inference & SHAP Visualizer (`nids_detector.py`)**: Ingest simulated flows, output predictions, and generate visual SHAP attribution plots.
 
 ---
 
 ## 8. Quick Start & Execution Guide
 
-### 8.1 Run End-to-End Simulation & SHAP Detection Demo
+### 8.1 Track Project Progress & Pending Tasks
+Any team member can run the automated progress tracker:
+```bash
+python check_progress.py
+```
+This prints the phase-by-phase completion table, overall percentage, and the next top tasks ready to implement.
+
+### 8.2 Run End-to-End Simulation & SHAP Detection Demo
 Execute the complete pipeline (packet synthesis -> flow extraction -> ensemble inference -> SHAP cards):
 ```bash
 python run_simulation_demo.py
 ```
+Total run time: ~7 seconds.
 
-### 8.2 Run Individual Pipeline Stages
+### 8.3 Run Individual Pipeline Stages
 
 1. **Synthesize Traffic & Export PCAP**:
    ```bash
@@ -256,15 +281,23 @@ python run_simulation_demo.py
    ```
    *Outputs:* Console SOC alert summary, flow-level Shapley breakdown, and visual SHAP plots saved to `shap_alerts/`.
 
-### 8.3 Compile & Run ns-3 C++ Simulation
-To run the simulation in a dedicated ns-3 environment:
-```bash
-# Copy C++ script to ns-3 scratch directory
-cp simulation/nids_sim.py /path/to/ns-allinone-3.x/ns-3.x/scratch/
+---
 
-# Build and execute via ns-3 Waf / CMake
-./ns3 run scratch/nids_sim
-# or
-./waf --run scratch/nids_sim
-```
-*Outputs:* `nids_sim_trace-X-Y.pcap` traces at the core bottleneck router.
+## 9. Team Partner Implementation Workflow
+
+When project partners pull this repository:
+1. **Activate Environment**:
+   ```bash
+   source venv/bin/activate
+   ```
+2. **Check Current Status**:
+   ```bash
+   python check_progress.py
+   ```
+3. **Pick an Open Task**: Open [`PROJECT_ROADMAP.md`](PROJECT_ROADMAP.md) and choose an uncompleted item (`- [ ]`). Current immediate priorities:
+   - **Phase 4**: Web-Based SOC Security Dashboard (`dashboard/app.py` with Streamlit & Plotly)
+   - **Phase 5**: Extended Attack Scenarios (ARP spoofing, DNS amplification, Slowloris)
+   - **Phase 6**: Real-Time Live Interface Sniffing Mode (`engine/live_sniffer.py`)
+   - **Phase 7**: IEEE Conference Paper & Overleaf LaTeX draft
+4. **Mark As Complete**: When your task is implemented and tested, change `- [ ]` to `- [x]` in `PROJECT_ROADMAP.md`.
+5. **Re-run Tracker**: Run `python check_progress.py` to watch your team's progress bar advance!
