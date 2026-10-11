@@ -295,7 +295,7 @@ When project partners pull this repository:
    python check_progress.py
    ```
 3. **Pick an Open Task**: Open [`PROJECT_ROADMAP.md`](PROJECT_ROADMAP.md) and choose an uncompleted item (`- [ ]`). Current immediate priorities:
-   - **Phase 4**: Web-Based SOC Security Dashboard (`dashboard/app.py` with Streamlit & Plotly)
+   - **Phase 4**: Web-Based SOC Security Dashboard (JavaScript + Tailwind CSS frontend with Python REST API)
    - **Phase 5**: Extended Attack Scenarios (ARP spoofing, DNS amplification, Slowloris)
    - **Phase 6**: Real-Time Live Interface Sniffing Mode (`engine/live_sniffer.py`)
    - **Phase 7**: IEEE Conference Paper & Overleaf LaTeX draft
