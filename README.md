@@ -213,9 +213,58 @@ Category      : Denial of Service (DoS)
 
 ---
 
-## 8. Next Step: Building the Simulator
+## 8. Simulation Framework Implementation & Execution Guide
 
 With the system architecture and theoretical foundation established, the next phase is building the simulator:
 1. **Set up the ns-3 simulation script (`nids_sim.cc`)**: Configure the nodes, channels, applications, and attack injection.
 2. **Build the PCAP-to-Flow Extractor (`flow_extractor.py`)**: Convert ns-3 `.pcap` packets into flow records matching the model features.
 3. **Build the Live Inference & SHAP Visualizer (`nids_detector.py`)**: Ingest simulated flows, output predictions, and generate visual SHAP attribution plots.
+
+---
+
+## 8. Quick Start & Execution Guide
+
+### 8.1 Run End-to-End Simulation & SHAP Detection Demo
+Execute the complete pipeline (packet synthesis -> flow extraction -> ensemble inference -> SHAP cards):
+```bash
+python run_simulation_demo.py
+```
+
+### 8.2 Run Individual Pipeline Stages
+
+1. **Synthesize Traffic & Export PCAP**:
+   ```bash
+   python simulation/traffic_generator.py
+   ```
+   *Outputs:* `simulated_traffic.pcap` containing benign traffic, TCP SYN flood, port scanning, and UDP packet storms.
+
+2. **Extract NetFlow Records Conforming to UNSW-NB15**:
+   ```bash
+   python engine/flow_extractor.py
+   ```
+   *Outputs:* Bidirectional flow DataFrame with 38 statistical network features (`dur`, `sbytes`, `dbytes`, `tcprtt`, `synack`, `ackdat`, etc.).
+
+3. **Train & Export ML Ensemble Models**:
+   ```bash
+   python engine/train_and_save_model.py
+   ```
+   *Outputs:* Serialized models in `model_artifacts/` (`xgb_multi.joblib`, `lgb_multi.joblib`, `preprocessor.joblib`).
+
+4. **Run Live NIDS Detection & SHAP Attribution**:
+   ```bash
+   python engine/nids_detector.py
+   ```
+   *Outputs:* Console SOC alert summary, flow-level Shapley breakdown, and visual SHAP plots saved to `shap_alerts/`.
+
+### 8.3 Compile & Run ns-3 C++ Simulation
+To run the simulation in a dedicated ns-3 environment:
+```bash
+# Copy C++ script to ns-3 scratch directory
+cp simulation/nids_sim.cc /path/to/ns-allinone-3.x/ns-3.x/scratch/
+
+# Build and execute via ns-3 Waf / CMake
+./ns3 run scratch/nids_sim
+# or
+./waf --run scratch/nids_sim
+```
+*Outputs:* `nids_sim_trace-X-Y.pcap` traces at the core bottleneck router.
