@@ -1,0 +1,20 @@
+# Virtual Environment
+venv/
+env/
+.env
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*.class
+
+# Jupyter Checkpoints
+.ipynb_checkpoints/
+
+# IDE & Editor configs
+.vscode/
+.idea/
+
+# Backups & Temporary files
+*.log
+Untitled_backup.ipynb
