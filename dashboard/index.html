@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X-NIDS | Explainable Network Intrusion Detection SOC Dashboard</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom Design Tokens & Aesthetics -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#070b14] text-slate-100 min-h-screen">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-40 bg-[#070b14]/80 backdrop-blur-md border-b border-white/10 px-6 py-3.5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- Brand & Status -->
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+          <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="font-heading text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-blue-400 bg-clip-text text-transparent">
+              X-NIDS SOC Operations
+            </h1>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-indicator"></span>
+              LIVE MONITORING
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-mono">Calibrated Ensemble (XGBoost + LightGBM) with Real-Time SHAP Attribution</p>
+        </div>
+      </div>
+
+      <!-- Controls & Actions -->
+      <div class="flex items-center gap-4 flex-wrap">
+        
+        <!-- Decision Threshold Slider -->
+        <div class="flex items-center gap-2.5 bg-slate-900/80 px-3.5 py-1.5 rounded-xl border border-white/10">
+          <span class="text-xs text-slate-400 font-medium whitespace-nowrap">Threshold:</span>
+          <input type="range" id="thresholdSlider" min="0.30" max="0.70" step="0.05" value="0.50" 
+                 class="w-24 accent-blue-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+          <span id="thresholdValue" class="text-xs font-mono font-bold text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">0.50</span>
+        </div>
+
+        <!-- Simulation Run Button -->
+        <button id="runSimBtn" 
+                class="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white shadow-lg shadow-blue-500/25 transition-all active:scale-95">
+          <svg id="btnIcon" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="btnText">Trigger Simulation & AI</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-6 py-6 space-y-6">
+
+    <!-- KPI SUMMARY METRICS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- Card 1: Inspected Flows -->
+      <div class="glass-panel p-5 relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs uppercase tracking-wider font-semibold">Total Inspected Flows</span>
+          <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-3-3v6" />
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span id="kpiTotalFlows" class="text-3xl font-heading font-extrabold text-white">437</span>
+          <span class="text-xs font-mono text-emerald-400">100% Parsed</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2 font-mono">NetFlow 5-Tuple Bidirectional</p>
+      </div>
+
+      <!-- Card 2: Threats Detected -->
+      <div class="glass-panel p-5 relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs uppercase tracking-wider font-semibold">Threat Alerts Triggered</span>
+          <svg class="w-5 h-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span id="kpiThreats" class="text-3xl font-heading font-extrabold text-rose-400">24</span>
+          <span id="kpiThreatRatio" class="text-xs font-mono font-bold text-rose-400 bg-rose-500/15 px-2 py-0.5 rounded-full">5.5% Ratio</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2 font-mono" id="kpiBenignCount">413 Legitimate flows OK</p>
+      </div>
+
+      <!-- Card 3: Line-Rate Throughput -->
+      <div class="glass-panel p-5 relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs uppercase tracking-wider font-semibold">Line-Rate Throughput</span>
+          <svg class="w-5 h-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span id="kpiThroughput" class="text-3xl font-heading font-extrabold text-cyan-400">54.5</span>
+          <span class="text-xs font-mono text-cyan-400">µs / flow</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2 font-mono" id="kpiLatency">Total Latency: 23.8 ms</p>
+      </div>
+
+      <!-- Card 4: AI Model Ensemble -->
+      <div class="glass-panel p-5 relative overflow-hidden group">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span class="text-xs uppercase tracking-wider font-semibold">Detection Engine</span>
+          <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-2xl font-heading font-extrabold text-purple-300">Soft Ensemble</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-2 font-mono">XGBoost + LightGBM + SHAP</p>
+      </div>
+
+    </section>
+
+    <!-- VISUAL ANALYTICS & SHAP PLOT ROW -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Attack Distribution Chart -->
+      <div class="glass-panel p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-heading font-bold text-base text-slate-200">Threat Category Distribution</h2>
+            <span class="text-xs text-slate-400 font-mono">UNSW-NB15 Taxonomy</span>
+          </div>
+          <div class="h-56 relative flex items-center justify-center">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+        <div id="chartLegend" class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-white/5 text-xs">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- SOC Engine Telemetry & Pipeline Status -->
+      <div class="glass-panel p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-heading font-bold text-base text-slate-200">Pipeline Performance & Health</h2>
+            <span class="text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">HEALTHY</span>
+          </div>
+          
+          <div class="space-y-4 text-sm">
+            <div class="bg-slate-900/60 p-3.5 rounded-xl border border-white/5">
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <span>Synthetic Packet Trace (PCAP)</span>
+                <span class="font-mono text-slate-200">996 Packets (157 KB)</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-blue-500 h-full rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <div class="bg-slate-900/60 p-3.5 rounded-xl border border-white/5">
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <span>Engineered Statistical Network Features</span>
+                <span class="font-mono text-purple-300">48 Domain Features</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-purple-500 h-full rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <div class="bg-slate-900/60 p-3.5 rounded-xl border border-white/5">
+              <div class="flex justify-between text-xs text-slate-400 mb-1">
+                <span>SHAP Attribution Model</span>
+                <span class="font-mono text-cyan-300">TreeExplainer Fast Path</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-cyan-500 h-full rounded-full" style="width: 100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+          <span>Last Pipeline Run:</span>
+          <span id="lastRunTime" class="font-mono text-slate-300 font-medium">Just now</span>
+        </div>
+      </div>
+
+      <!-- Global SHAP Attribution Visual Plot Viewer -->
+      <div class="glass-panel p-6 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-heading font-bold text-base text-slate-200">Global SHAP Attribution Plot</h2>
+            <button id="expandPlotBtn" class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+              </svg>
+              Expand
+            </button>
+          </div>
+          <p class="text-xs text-slate-400 mb-3">Top feature impact across malicious threat instances</p>
+          <div class="h-48 rounded-xl bg-slate-900/80 border border-white/5 overflow-hidden flex items-center justify-center cursor-pointer group" id="plotThumbnailContainer">
+            <img id="shapPlotImg" src="/shap_alerts/exploits_shap_summary.png" 
+                 alt="SHAP Summary Plot" 
+                 class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                 onerror="this.style.display='none'; document.getElementById('plotPlaceholder').style.display='flex';">
+            <div id="plotPlaceholder" class="hidden flex-col items-center justify-center p-4 text-center">
+              <svg class="w-8 h-8 text-slate-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span class="text-xs text-slate-500 font-mono">Run simulation to generate SHAP plots</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-white/5 text-xs text-slate-400 flex items-center justify-between">
+          <span>Target Attack: <strong class="text-slate-200 font-mono">Exploits</strong></span>
+          <span class="text-slate-400 font-mono">TreeExplainer Beeswarm</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- LIVE NETFLOW INSPECTION FEED & THREAT TABLE -->
+    <section class="glass-panel p-6 space-y-4">
+      
+      <!-- Table Controls & Filters -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="font-heading font-bold text-lg text-slate-100">Live NetFlow Telemetry & Detection Stream</h2>
+          <p class="text-xs text-slate-400">Bidirectional flow records inspected in real-time with confidence scores</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Search -->
+          <div class="relative">
+            <input type="text" id="flowSearch" placeholder="Search IP, Port, Proto..." 
+                   class="bg-slate-900/90 text-xs px-3.5 py-2 pl-9 rounded-xl border border-white/10 focus:border-blue-500 focus:outline-none w-56 text-slate-200 placeholder-slate-500">
+            <svg class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          <!-- Status Filters -->
+          <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-white/10 text-xs">
+            <button class="filter-btn active px-3 py-1 rounded-lg font-medium transition-colors bg-blue-600 text-white" data-status="all">All</button>
+            <button class="filter-btn px-3 py-1 rounded-lg font-medium transition-colors text-slate-400 hover:text-white" data-status="threat">Threats Only</button>
+            <button class="filter-btn px-3 py-1 rounded-lg font-medium transition-colors text-slate-400 hover:text-white" data-status="benign">Benign Only</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabular Feed -->
+      <div class="overflow-x-auto rounded-xl border border-white/5 bg-slate-950/40">
+        <table class="w-full text-left text-xs whitespace-nowrap">
+          <thead class="bg-slate-900/80 text-slate-400 uppercase tracking-wider font-semibold border-b border-white/5">
+            <tr>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4">Flow 5-Tuple (Src -> Dst)</th>
+              <th class="py-3 px-4">Proto</th>
+              <th class="py-3 px-4">Duration</th>
+              <th class="py-3 px-4">Volume (Pkts / Bytes)</th>
+              <th class="py-3 px-4">Verdict Category</th>
+              <th class="py-3 px-4">Confidence</th>
+              <th class="py-3 px-4 text-right">Explainability</th>
+            </tr>
+          </thead>
+          <tbody id="flowsTableBody" class="divide-y divide-white/5 font-mono text-slate-300">
+            <!-- Dynamically populated rows -->
+            <tr>
+              <td colspan="8" class="text-center py-8 text-slate-500">Loading flow telemetry...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="flex items-center justify-between text-xs text-slate-400 pt-2">
+        <span id="pageInfo">Showing 1 to 25 of 437 flows</span>
+        <div class="flex items-center gap-2">
+          <button id="prevPageBtn" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-40 border border-white/5 transition-colors">Previous</button>
+          <button id="nextPageBtn" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-40 border border-white/5 transition-colors">Next</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- SLIDE-OVER SHAP EXPLAINABILITY DRAWER -->
+  <div id="shapDrawer" class="drawer-backdrop fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
+    <div class="drawer-content w-full max-w-xl bg-[#0d1527] border-l border-white/10 h-full overflow-y-auto p-6 space-y-6 shadow-2xl">
+      
+      <!-- Drawer Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-white/10">
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 mb-2">
+            SHAP TREEEXPLAINER DEEP ATTRIBUTION
+          </span>
+          <h3 id="drawerFlowTitle" class="font-heading text-xl font-bold text-white">Flow #0 Attribution</h3>
+          <p id="drawerFlowSubtitle" class="text-xs text-slate-400 font-mono mt-0.5">10.1.1.10:41908 -> 10.1.2.50:80 (TCP)</p>
+        </div>
+        <button id="closeDrawerBtn" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Verdict & Confidence Banner -->
+      <div class="p-4 rounded-xl bg-slate-900/80 border border-white/10 flex items-center justify-between">
+        <div>
+          <span class="text-xs uppercase text-slate-400 font-semibold tracking-wider">Classification Verdict</span>
+          <div id="drawerVerdict" class="text-lg font-heading font-extrabold text-rose-400">EXPLOITS</div>
+        </div>
+        <div class="text-right">
+          <span class="text-xs uppercase text-slate-400 font-semibold tracking-wider">Ensemble Confidence</span>
+          <div id="drawerConfidence" class="text-lg font-heading font-extrabold text-white">53.2%</div>
+        </div>
+      </div>
+
+      <!-- Explainability Feature Drivers -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h4 class="font-heading font-bold text-sm text-slate-200">Top Feature Drivers (Attribution Breakdown)</h4>
+          <span class="text-xs text-slate-400 font-mono">Impact on Log-Odds</span>
+        </div>
+        <p class="text-xs text-slate-400">Red drivers pushed model prediction toward <strong>Malicious</strong>; green pushed toward <strong>Benign</strong>.</p>
+        
+        <div id="drawerDriversList" class="space-y-3 pt-2">
+          <!-- Dynamically populated attribution bars -->
+        </div>
+      </div>
+
+      <!-- Plain-English SOC Recommendation -->
+      <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-2">
+        <div class="flex items-center gap-2 text-blue-400 font-semibold text-xs uppercase tracking-wider">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Automated SOC Incident Recommendation
+        </div>
+        <p id="drawerRecommendation" class="text-xs text-slate-300 leading-relaxed">
+          The intrusion detection engine flagged this flow primarily due to anomalous HTTP response body length (1,289 bytes) and egress byte asymmetry typical of exploit delivery payloads. Recommend quarantine of host and inspecting endpoint web logs.
+        </p>
+      </div>
+
+      <!-- Raw Flow Metrics -->
+      <div class="pt-2">
+        <details class="group border border-white/10 rounded-xl bg-slate-900/60 p-3 text-xs">
+          <summary class="font-semibold text-slate-300 cursor-pointer flex justify-between items-center">
+            <span>Raw Flow Features (UNSW-NB15 Metrics)</span>
+            <span class="text-slate-500 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div id="drawerRawMetrics" class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/5 font-mono text-slate-400">
+            <!-- Dynamically populated -->
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL FOR FULL-SCREEN SHAP PLOT ZOOM -->
+  <div id="plotModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-6">
+    <div class="max-w-4xl w-full bg-slate-900 p-4 rounded-2xl border border-white/15 relative">
+      <button id="closePlotModalBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <h3 class="font-heading font-bold text-lg mb-3 text-white">X-NIDS SHAP Global Beeswarm Attribution Plot</h3>
+      <div class="bg-black/40 rounded-xl p-2 flex items-center justify-center max-h-[80vh] overflow-auto">
+        <img id="modalPlotImg" src="/shap_alerts/exploits_shap_summary.png" class="max-w-full max-h-[70vh] object-contain" alt="SHAP Plot Zoom">
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Client Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
