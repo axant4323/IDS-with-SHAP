@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UNSW-NB15 Dataset Technical Reference & Feature Specification</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 10mm 12mm 12mm 12mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.42;
+      font-size: 10px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* Page container */
+    .page {
+      width: 100%;
+      height: 274mm;
+      max-height: 274mm;
+      page-break-after: always;
+      break-after: page;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+
+    /* Running Header */
+    .running-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #0284c7;
+      padding-bottom: 4px;
+      margin-bottom: 10px;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #0369a1;
+    }
+
+    .running-header .title-left {
+      color: #0f172a;
+    }
+
+    /* Running Footer */
+    .running-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: #64748b;
+    }
+
+    /* Page 1 Header Banner */
+    .header-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0369a1 100%);
+      color: #ffffff;
+      padding: 16px 20px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      border-left: 5px solid #38bdf8;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.22);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .header-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+
+    .header-subtitle {
+      font-size: 10px;
+      color: #cbd5e1;
+      max-width: 700px;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 5px;
+      padding: 6px 12px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-label {
+      font-size: 7.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .meta-val {
+      font-size: 10px;
+      color: #f8fafc;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    /* Section Headings */
+    .section-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 1.5px solid #0284c7;
+      padding-bottom: 3px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-badge {
+      background: #0284c7;
+      color: white;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .sub-section-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 8px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .sub-section-title::before {
+      content: "";
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      background-color: #0284c7;
+      border-radius: 50%;
+    }
+
+    p {
+      margin-bottom: 6px;
+      color: #334155;
+      font-size: 9.5px;
+      line-height: 1.42;
+    }
+
+    /* Alert / Info Boxes */
+    .info-card {
+      background-color: #f0f9ff;
+      border-left: 3.5px solid #0284c7;
+      border-radius: 4px;
+      padding: 6px 10px;
+      margin-bottom: 8px;
+      font-size: 9px;
+      color: #0369a1;
+      line-height: 1.35;
+    }
+
+    .info-card strong {
+      color: #0c4a6e;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8px;
+      font-size: 9px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+    }
+
+    thead {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    th {
+      padding: 4px 6px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 8.5px;
+      letter-spacing: 0.02em;
+      border: 1px solid #1e293b;
+    }
+
+    td {
+      padding: 3.8px 6px;
+      border: 1px solid #e2e8f0;
+      vertical-align: top;
+      line-height: 1.32;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    /* Code Tags & Badges */
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 8.5px;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 1px 3px;
+      border-radius: 3px;
+      border: 1px solid #cbd5e1;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .code-feat {
+      color: #0369a1;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      font-weight: 700;
+    }
+
+    .type-badge {
+      display: inline-block;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 7.5px;
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-weight: 600;
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    .badge-float { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .badge-int { background: #fdf4ff; color: #a21caf; border-color: #f5d0fe; }
+    .badge-str { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+
+    .tag {
+      display: inline-block;
+      font-size: 7.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 1px 3px;
+      border-radius: 2px;
+      margin-right: 2px;
+      white-space: nowrap;
+    }
+
+    .tag-benign { background: #dcfce7; color: #15803d; }
+    .tag-attack { background: #fee2e2; color: #b91c1c; }
+    .tag-minority { background: #fef3c7; color: #b45309; }
+
+    /* Grids & Cards */
+    .cards-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .cards-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .feature-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      padding: 7px 9px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .feature-card-header {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .feature-card-body {
+      font-size: 8.5px;
+      color: #475569;
+      line-height: 1.35;
+    }
+
+    .math-formula {
+      font-family: "Cambria Math", "Times New Roman", serif;
+      font-style: italic;
+      font-size: 11px;
+      text-align: center;
+      padding: 4px 0;
+      color: #0369a1;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==========================================
+     PAGE 1: COVER & ATTACK TOPOLOGY
+     ========================================== -->
+<div class="page">
+  <div class="header-banner">
+    <div class="header-badge">Security Technical Reference &bull; Architecture Specification</div>
+    <h1 class="header-title">UNSW-NB15 Dataset Technical Reference & Feature Specification</h1>
+    <div class="header-subtitle">
+      A comprehensive technical manual detailing all 36 baseline network flow metrics, physical transport semantics, attack attribution signatures, and the 48 engineered domain features powering the X-NIDS Explainable AI detection engine.
+    </div>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <span class="meta-label">Project Core</span>
+        <span class="meta-val">X-NIDS Engine</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Dataset Records</span>
+        <span class="meta-val">82,332 NetFlows</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Feature Space</span>
+        <span class="meta-val">36 Raw &bull; 48 Engineered</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Detection Paradigm</span>
+        <span class="meta-val">Ensemble + SHAP XAI</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <span class="section-badge">SEC 1</span>
+    Dataset Architecture & Attack Distribution Profile
+  </div>
+
+  <p>
+    The <strong>UNSW-NB15</strong> dataset was created by the Australian Centre for Cyber Security (ACCS) using the Cyber Range Lab of UNSW Canberra. Raw bidirectional packet traces were captured using the IXIA PerfectStorm tool, synthesizing realistic modern background traffic with comprehensive attack profiles. Traces were processed via <strong>Bro-IDS (Zeek)</strong> and <strong>Argus</strong> flow analyzers, producing 36 rich statistical features spanning connection dynamics, timing, throughput, and protocol flags.
+  </p>
+
+  <div class="info-card">
+    <strong>Data Sanitization Protocol in X-NIDS:</strong> Prior to model training, our pipeline identified and purged <strong>1,914 feature-identical conflicting records</strong> (instances with identical 34 network features but discordant ground-truth labels) and deduplicated <strong>32,361 identical records</strong> to prevent decision tree memorization and artificial metric inflation.
+  </div>
+
+  <div class="sub-section-title">Complete Attack Topology & Distribution in Dataset (82,332 Cleaned Flow Records)</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Class Category</th>
+        <th style="width: 8%;">Instances</th>
+        <th style="width: 7%;">Share</th>
+        <th style="width: 12%;">Severity Profile</th>
+        <th>Physical Attack Mechanism & Observable Network Behavior</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Normal</strong></td>
+        <td>37,000</td>
+        <td>44.94%</td>
+        <td><span class="tag tag-benign">Benign</span> Standard</td>
+        <td>Legitimate user transactions: HTTP/HTTPS web browsing, DNS lookups, SMTP mail, and authorized file transfers. Characterized by balanced handshake latencies, complete TCP teardowns (<code>FIN</code>), and normal payload ratios.</td>
+      </tr>
+      <tr>
+        <td><strong>Generic</strong></td>
+        <td>18,871</td>
+        <td>22.92%</td>
+        <td><span class="tag tag-attack">High</span> Cryptographic</td>
+        <td>Collision technique targeting block ciphers and hash functions without internal structure knowledge. Generates high packet velocity with uniform, predictable payload byte lengths.</td>
+      </tr>
+      <tr>
+        <td><strong>Exploits</strong></td>
+        <td>11,132</td>
+        <td>13.52%</td>
+        <td><span class="tag tag-attack">Critical</span> Vulnerability</td>
+        <td>Exploits known CVE vulnerabilities in daemons and operating systems to alter execution flow. Manifests in abnormal URI request strings, irregular packet sizes, and unusual state sequences.</td>
+      </tr>
+      <tr>
+        <td><strong>Fuzzers</strong></td>
+        <td>6,062</td>
+        <td>7.36%</td>
+        <td><span class="tag tag-attack">Medium</span> Automated</td>
+        <td>Automated testing injecting pseudo-random, boundary-breaking inputs to crash servers. Characterized by elevated connection resets (<code>RST</code>), high jitter, and anomalous mean packet lengths.</td>
+      </tr>
+      <tr>
+        <td><strong>DoS</strong></td>
+        <td>4,089</td>
+        <td>4.97%</td>
+        <td><span class="tag tag-attack">High</span> Exhaustion</td>
+        <td>Denial of Service attacks designed to saturate network bandwidth or deplete OS socket buffers. Exhibits extreme asymmetry: high <code>sbytes</code>/<code>spkts</code>, zero or negligible <code>dbytes</code>, and astronomical packet rates.</td>
+      </tr>
+      <tr>
+        <td><strong>Reconnaissance</strong></td>
+        <td>3,496</td>
+        <td>4.25%</td>
+        <td><span class="tag tag-attack">Medium</span> Probing</td>
+        <td>Port sweeps and service footprinting (Nmap, masscan). Identified by ultra-short durations (<code>dur ~ 0</code>), elevated <code>ct_dst_sport_ltm</code>, and interrupted/unreplied connection states (<code>REQ</code>/<code>INT</code>).</td>
+      </tr>
+      <tr>
+        <td><strong>Analysis</strong></td>
+        <td>677</td>
+        <td>0.82%</td>
+        <td><span class="tag tag-minority">Minority</span> Web Probing</td>
+        <td>Specialized web application probes (SQL injection, XSS parameter fuzzing, path traversal). Characterized by custom HTTP query verbs and short pipelined transaction depths.</td>
+      </tr>
+      <tr>
+        <td><strong>Backdoor</strong></td>
+        <td>583</td>
+        <td>0.71%</td>
+        <td><span class="tag tag-minority">Minority</span> Covert C2</td>
+        <td>Covert persistence mechanism bypassing standard authentication for command-and-control (C2). Exhibits periodic beaconing inter-packet timing, low byte volume, and extended flow durations.</td>
+      </tr>
+      <tr>
+        <td><strong>Shellcode</strong></td>
+        <td>378</td>
+        <td>0.46%</td>
+        <td><span class="tag tag-minority">Minority</span> Payload Exec</td>
+        <td>Machine-code byte sequences transmitted to exploit memory flaws and spawn command shells. Characterized by specific byte lengths, small packet counts, and distinct TCP sequence offsets.</td>
+      </tr>
+      <tr>
+        <td><strong>Worms</strong></td>
+        <td>44</td>
+        <td>0.05%</td>
+        <td><span class="tag tag-minority">Ultra-Rare</span> Propagation</td>
+        <td>Self-replicating malicious programs propagating autonomously across network subnets by scanning and infecting vulnerable peer hosts. Highly bursty across sequential destination ports.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="running-footer">
+    <div><strong>X-NIDS Research Project</strong> &bull; UNSW-NB15 Dataset Technical Reference</div>
+    <div>Page 1 of 5</div>
+  </div>
+</div>
+
+<!-- ==========================================
+     PAGE 2: BASELINE FEATURES (PART 1)
+     ========================================== -->
+<div class="page">
+  <div class="running-header">
+    <span class="title-left">X-NIDS Technical Reference &bull; Feature Dictionary</span>
+    <span>Section 2: Baseline Flow Features (Part 1)</span>
+  </div>
+
+  <div class="section-title">
+    <span class="section-badge">SEC 2</span>
+    Comprehensive Specification of the 36 Baseline Dataset Features
+  </div>
+
+  <p>
+    The baseline features capture 5-tuple connection semantics, transport-layer statistics, flow dynamics, jitter variance, and application-layer flags. The first 15 features are detailed below:
+  </p>
+
+  <!-- 1. Connection Identification & Protocol Dynamics -->
+  <div class="sub-section-title">1. Connection Identification & Protocol Dynamics (4 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Units</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">dur</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Flow Duration:</strong> Total connection elapsed time in seconds ($t_{end} - t_{start}$).</td>
+        <td>Distinguishes rapid port scans ($dur < 0.001s$) from sustained connections. Persistent backdoors and data exfiltration exhibit abnormally extended duration values.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">proto</code></td>
+        <td><span class="type-badge badge-str">string</span></td>
+        <td><strong>Transaction Protocol:</strong> Transport/network layer protocol (<code>tcp</code>, <code>udp</code>, <code>icmp</code>, <code>arp</code>, etc.).</td>
+        <td>Identifies protocol-specific anomaly signatures (e.g., UDP amplification floods vs. TCP SYN floods). 133 unique protocols appear across UNSW-NB15 traces.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">service</code></td>
+        <td><span class="type-badge badge-str">string</span></td>
+        <td><strong>Application Service:</strong> Identified protocol service (<code>http</code>, <code>ftp</code>, <code>smtp</code>, <code>ssh</code>, <code>dns</code>, or <code>"-"</code>).</td>
+        <td>Permits context-aware inspection. Attacks targeting non-standard services or disguising malicious payloads on unassigned ports appear as <code>"-"</code>.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">state</code></td>
+        <td><span class="type-badge badge-str">string</span></td>
+        <td><strong>Connection State:</strong> Protocol state indicator (<code>FIN</code>, <code>CON</code>, <code>INT</code>, <code>REQ</code>, <code>RST</code>, etc.).</td>
+        <td>Normal TCP concludes with <code>FIN</code>. Floods and SYN scans produce <code>REQ</code> (unreplied) or <code>INT</code> (interrupted before 3-way handshake completes).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 2. Packet & Byte Volume Metrics -->
+  <div class="sub-section-title">2. Packet & Byte Volume Metrics (6 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Units</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">spkts</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Source Packet Count:</strong> Total packets sent from client initiator to destination host.</td>
+        <td>High <code>spkts</code> combined with low responder packets indicates unidirectional DoS attacks or brute-force credential stuffing attempts.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dpkts</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Destination Packet Count:</strong> Total packets returned from responder to source.</td>
+        <td>Zero <code>dpkts</code> indicates rejected, dropped, or firewalled connections—a primary fingerprint of reconnaissance port scans and SYN floods.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">sbytes</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Source Bytes:</strong> Total byte volume transmitted by source host including headers and payload.</td>
+        <td>Captures upload volume. Unusually large source byte volumes point toward data exfiltration, memory corrupting buffer overflows, or heavy file uploads.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dbytes</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Destination Bytes:</strong> Total byte volume transmitted by destination host.</td>
+        <td>Captures server response size. Disproportionately massive <code>dbytes</code> relative to request size flags data leakage or large exploit payloads retrieved.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">smean</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Source Mean Packet Size:</strong> Average size of packets sent from source ($sbytes / spkts$).</td>
+        <td>Probing tools use minimal frame headers ($smean \approx 40\text{--}64$ bytes). Malware with embedded payloads creates large, uniform packet means.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dmean</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Destination Mean Packet Size:</strong> Average size of packets sent from destination ($dbytes / dpkts$).</td>
+        <td>Differentiates small ACK responses ($dmean \approx 40$ bytes) from rich content transfers (HTML, binary payloads) in server replies.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 3. Rate, Throughput & Packet Loss Dynamics -->
+  <div class="sub-section-title">3. Rate, Throughput & Packet Loss Dynamics (5 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Units</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">rate</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Transmission Rate:</strong> Aggregate packets per second: $(spkts + dpkts) / dur$.</td>
+        <td>Critical velocity indicator. Extreme rates characterize automated DoS floods, while stealthy persistent attacks deliberately suppress this metric.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">sload</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Source Bit Rate:</strong> Source throughput in bits/second: $(sbytes \times 8) / dur$.</td>
+        <td>Bandwidth saturation metric. Volumetric attacks generate astronomical source bit rates designed to exhaust uplink capacity.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dload</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Destination Bit Rate:</strong> Destination throughput in bits/second: $(dbytes \times 8) / dur$.</td>
+        <td>Evaluates return bandwidth. Amplification attacks (e.g., DNS/NTP reflection) trigger massive asymmetric destination load values.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">sloss</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Source Packet Loss:</strong> Dropped or retransmitted packets by initiator.</td>
+        <td>Signals transmission degradation, aggressive congestion avoidance, or network stack interference by network defenses.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dloss</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Destination Packet Loss:</strong> Dropped or retransmitted packets by responder.</td>
+        <td>Severe destination loss indicates victim link congestion, server socket backlog overflow, or receiver buffer starvation under attack.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="running-footer">
+    <div><strong>X-NIDS Research Project</strong> &bull; UNSW-NB15 Dataset Technical Reference</div>
+    <div>Page 2 of 5</div>
+  </div>
+</div>
+
+<!-- ==========================================
+     PAGE 3: BASELINE FEATURES (PART 2)
+     ========================================== -->
+<div class="page">
+  <div class="running-header">
+    <span class="title-left">X-NIDS Technical Reference &bull; Feature Dictionary</span>
+    <span>Section 2: Baseline Flow Features (Part 2)</span>
+  </div>
+
+  <!-- 4. Inter-Packet Timing & Jitter Dynamics -->
+  <div class="sub-section-title">4. Inter-Packet Timing & Jitter Dynamics (4 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Units</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">sinpkt</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Source Inter-Packet Time:</strong> Mean interval (milliseconds) between consecutive source packets.</td>
+        <td>Automated attack scripts fire packets at deterministic, sub-millisecond intervals ($sinpkt \to 0$), contrasting with human interactive pauses.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dinpkt</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Destination Inter-Packet Time:</strong> Mean interval (milliseconds) between consecutive responder packets.</td>
+        <td>Measures server response consistency. Large <code>dinpkt</code> values indicate delayed processing, thread blocking, or server resource exhaustion.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">sjit</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Source Jitter:</strong> Variance / standard deviation in packet arrival intervals (ms) from source.</td>
+        <td>Low jitter signifies synthetic, bot-driven packet generation; high jitter reflects route oscillations or randomized evasion tactics.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">djit</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>Destination Jitter:</strong> Variance in packet arrival intervals (ms) from responder.</td>
+        <td>Reveals responder queuing volatility, server load fluctuations, and TCP congestion window throttling under adversarial conditions.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 5. TCP Handshake & Flow Control Dynamics -->
+  <div class="sub-section-title">5. TCP Handshake & Flow Control Dynamics (7 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Units</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">swin</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Source TCP Window Size:</strong> Advertised receive window buffer size (bytes) from initiator.</td>
+        <td>Zero window advertisements (<code>swin = 0</code>) signal client buffer collapse or socket stalls. Non-TCP flows record zero.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dwin</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Destination TCP Window Size:</strong> Advertised receive window buffer size (bytes) from responder.</td>
+        <td>A target under heavy DoS will advertise zero window sizes as its internal kernel socket queues become saturated.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">stcpb</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Source TCP Base Sequence (ISN):</strong> 32-bit TCP base sequence number chosen by client.</td>
+        <td>Key fingerprint for OS identification. Custom attack scripts often generate pseudo-random or predictable initial sequence numbers.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">dtcpb</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Destination TCP Base Sequence:</strong> 32-bit TCP base sequence number chosen by responder.</td>
+        <td>Zero in half-open SYN connections where the server never replied with a <code>SYN-ACK</code>.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">tcprtt</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>TCP Round-Trip Time:</strong> 3-way handshake setup duration in seconds: $tcprtt = synack + ackdat$.</td>
+        <td>Measures connection latency. Large <code>tcprtt</code> indicates network congestion or server processing delays under attack.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">synack</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>SYN to SYN-ACK Latency:</strong> Time gap (seconds) between client's <code>SYN</code> and server's <code>SYN-ACK</code>.</td>
+        <td>Direct diagnostic of server health. High <code>synack</code> denotes that the victim's SYN backlog queue is filling up under flood conditions.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">ackdat</code></td>
+        <td><span class="type-badge badge-float">float64</span></td>
+        <td><strong>SYN-ACK to Final ACK Latency:</strong> Time gap (seconds) between server's <code>SYN-ACK</code> and client's final <code>ACK</code>.</td>
+        <td>Attack scripts using raw sockets often skip the final ACK to keep sockets open (half-open scan), leading to null or anomalous latencies.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 6. Application-Layer Content Indicators -->
+  <div class="sub-section-title">6. Application-Layer Content Indicators (5 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Units</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">trans_depth</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>HTTP Pipelining Depth:</strong> Sequential HTTP request count over a single persistent TCP connection.</td>
+        <td>High transaction depth suggests HTTP pipeline exploitation, web crawling, or rapid-fire brute forcing over an established keep-alive channel.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">response_body_len</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>HTTP Response Body Length:</strong> Content length (bytes) of HTTP payload returned by web daemon.</td>
+        <td>Abnormally large response bodies indicate file leakage or exfiltration; zero-length bodies with 200 OK often indicate command execution.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">ct_flw_http_mthd</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>HTTP Method Count:</strong> Number of flows with standard HTTP request verbs (e.g., <code>GET</code>, <code>POST</code>).</td>
+        <td>Flags web application traffic density. Useful for isolating web exploit probes from non-web protocol tunneling.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">is_ftp_login</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>FTP Authentication Flag:</strong> Binary flag ($1$ if FTP session authenticated with credentials, else $0$).</td>
+        <td>Zero values during extensive FTP traffic point to automated credential brute-force attacks or anonymous login attempts.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">ct_ftp_cmd</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>FTP Command Count:</strong> Number of commands issued in session (e.g., <code>USER</code>, <code>PASS</code>, <code>RETR</code>, <code>STOR</code>).</td>
+        <td>High command counts indicate automated directory transversal, bulk downloading, or command injection via FTP.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="running-footer">
+    <div><strong>X-NIDS Research Project</strong> &bull; UNSW-NB15 Dataset Technical Reference</div>
+    <div>Page 3 of 5</div>
+  </div>
+</div>
+
+<!-- ==========================================
+     PAGE 4: AGGREGATES & ENGINEERED FEATURES (PART 1)
+     ========================================== -->
+<div class="page">
+  <div class="running-header">
+    <span class="title-left">X-NIDS Technical Reference &bull; Feature Dictionary</span>
+    <span>Section 2 & 3: Aggregates & Engineered Features</span>
+  </div>
+
+  <!-- 7. Windowed Connection Aggregates & Behavioral Anomalies -->
+  <div class="sub-section-title">7. Windowed Connection Aggregates & Behavioral Anomalies (3 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Units</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">ct_src_dport_ltm</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Source-to-Dest-Port Window:</strong> Connections sharing SrcIP and DstPort in 100-flow window.</td>
+        <td>Detects distributed Denial of Service (DDoS) campaigns targeting a specific service port (e.g., port 80/443 or DNS port 53).</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">ct_dst_sport_ltm</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Dest-to-Source-Port Window:</strong> Connections sharing DstIP and SrcPort in 100-flow window.</td>
+        <td>Primary signature of port sweep scanning. An adversary scanning thousands of destination IPs using a fixed source port creates massive spikes.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">is_sm_ips_ports</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Same IP & Port Flag:</strong> Binary flag ($1$ if $\text{SrcIP} == \text{DstIP}$ and $\text{SrcPort} == \text{DstPort}$).</td>
+        <td>Direct detection of classic <strong>LAND attacks</strong> (Local Area Network Denial), where spoofed packets cause a victim host to loop endlessly into itself.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 8. Ground Truth Labels -->
+  <div class="sub-section-title">8. Ground Truth Target Labels (2 Features)</div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 14%;">Feature</th>
+        <th style="width: 9%;">Type</th>
+        <th style="width: 27%;">Metric Definition & Values</th>
+        <th>Physical Network Semantics & Security Analysis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="code-feat">label</code></td>
+        <td><span class="type-badge badge-int">int64</span></td>
+        <td><strong>Binary Target:</strong> <code>0</code> = Benign (37,000) &bull; <code>1</code> = Malicious (45,332).</td>
+        <td>Primary objective target for binary intrusion detection classifiers and rapid threat filtering.</td>
+      </tr>
+      <tr>
+        <td><code class="code-feat">attack_cat</code></td>
+        <td><span class="type-badge badge-str">string</span></td>
+        <td><strong>Multiclass Target:</strong> 10 classes (Normal, Generic, Exploits, DoS, etc.).</td>
+        <td>Target for fine-grained threat attribution, forensic root-cause analysis, and automated security playbooks.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 3: ENGINEERED FEATURES -->
+  <div class="section-title">
+    <span class="section-badge">SEC 3</span>
+    The 48 Engineered Features in the X-NIDS Architecture
+  </div>
+
+  <p>
+    Standard baseline features alone struggle with minority attack recall (e.g., Worms, Shellcode, Backdoor) due to extreme class imbalance and non-linear traffic patterns. The X-NIDS engine introduces <strong>48 domain network features</strong> engineered directly from raw network flows (implemented in <code>engine/train_and_save_model.py</code>):
+  </p>
+
+  <div class="cards-grid-2">
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-benign">Domain 1</span>
+        Volume Aggregation & Differences (5 Features)
+      </div>
+      <div class="feature-card-body">
+        <code>tot_bytes = sbytes + dbytes</code><br>
+        <code>tot_pkts = spkts + dpkts</code><br>
+        <code>tot_loss = sloss + dloss</code><br>
+        <code>byte_diff = |sbytes - dbytes|</code><br>
+        <code>pkt_diff = |spkts - dpkts|</code><br>
+        <em>Captures total flow mass and unidirectional payload skewness.</em>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-benign">Domain 2</span>
+        Asymmetric Flow & Loss Ratios (7 Features)
+      </div>
+      <div class="feature-card-body">
+        <code>bytes_ratio = (sbytes + 1) / (dbytes + 1)</code><br>
+        <code>pkts_ratio = (spkts + 1) / (dpkts + 1)</code><br>
+        <code>sbytes_per_pkt = sbytes / (spkts + 1)</code><br>
+        <code>dbytes_per_pkt = dbytes / (dpkts + 1)</code><br>
+        <code>loss_ratio = tot_loss / (tot_pkts + 1)</code><br>
+        <code>sloss_rate = sloss / (spkts + 1)</code> &bull; <code>dloss_rate = dloss / (dpkts + 1)</code>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-benign">Domain 3</span>
+        Rate & Dynamic Throughput Ratios (5 Features)
+      </div>
+      <div class="feature-card-body">
+        <code>byte_rate = tot_bytes / (dur + 1e-5)</code><br>
+        <code>pkt_rate = tot_pkts / (dur + 1e-5)</code><br>
+        <code>sload_to_rate = sload / (rate + 1e-5)</code><br>
+        <code>dload_to_rate = dload / (rate + 1e-5)</code><br>
+        <code>load_ratio = (sload + 1) / (dload + 1)</code><br>
+        <em>Isolates burst transmission dynamics from persistent traffic.</em>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-benign">Domain 4</span>
+        TCP Handshake Latencies & Jitter Dynamics (10 Features)
+      </div>
+      <div class="feature-card-body">
+        <code>tcprtt_to_dur = tcprtt / (dur + 1e-5)</code><br>
+        <code>synack_to_ackdat = (synack + 1e-5) / (ackdat + 1e-5)</code><br>
+        <code>tcprtt_synack_ratio = synack / (tcprtt + 1e-5)</code><br>
+        <code>syn_ack_diff = |synack - ackdat|</code><br>
+        <code>jit_diff = |sjit - djit|</code> &bull; <code>jit_ratio = (sjit + 1) / (djit + 1)</code> &bull; <code>jit_sum = sjit + djit</code><br>
+        <code>dinpkt_to_sinpkt</code> &bull; <code>dinpkt_dload_ratio</code> &bull; <code>mean_size_ratio</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="running-footer">
+    <div><strong>X-NIDS Research Project</strong> &bull; UNSW-NB15 Dataset Technical Reference</div>
+    <div>Page 4 of 5</div>
+  </div>
+</div>
+
+<!-- ==========================================
+     PAGE 5: PIPELINE, ML ARCHITECTURE & SHAP XAI
+     ========================================== -->
+<div class="page">
+  <div class="running-header">
+    <span class="title-left">X-NIDS Technical Reference &bull; Architecture</span>
+    <span>Section 3 & 4: Pipeline, ML Architecture & SHAP XAI</span>
+  </div>
+
+  <div class="sub-section-title">Remaining Engineered Feature Domains (Domain 5 & 6)</div>
+
+  <div class="cards-grid-2">
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-benign">Domain 5</span>
+        Connection & Window Metrics (3 Features)
+      </div>
+      <div class="feature-card-body">
+        <code>ct_ratio = (ct_src_dport_ltm + 1) / (ct_dst_sport_ltm + 1)</code><br>
+        <code>swin_dwin_ratio = (swin + 1) / (dwin + 1)</code><br>
+        <code>stcpb_dtcpb_diff = |stcpb - dtcpb|</code><br>
+        <em>Highlights port scan asymmetry and window exhaustion.</em>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-benign">Domain 6</span>
+        Binary Protocol Behavior Flags (4 Features)
+      </div>
+      <div class="feature-card-body">
+        <code>has_tcp_handshake = 1 if tcprtt > 0 else 0</code><br>
+        <code>is_slow_handshake = 1 if tcprtt > 0.05 else 0</code><br>
+        <code>zero_dbytes = 1 if dbytes == 0 else 0</code><br>
+        <code>zero_dur = 1 if dur == 0 else 0</code><br>
+        <em>Encodes protocol boundary states as clean linear indicators.</em>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-section-title">Log-Normal Variance Stabilizers (11 Features) & Categorical Frequency Maps (3 Features)</div>
+  <p>
+    Heavy-tailed network distributions produce extreme gradient variance in decision trees. We apply <strong>log-normal transforms</strong> ($\log(1 + x)$) across 11 high-skew dimensions:
+  </p>
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 5px 8px; margin-bottom: 8px; font-size: 8.5px;">
+    <code>log_sbytes</code>, <code>log_dbytes</code>, <code>log_tot_bytes</code>, <code>log_sload</code>, <code>log_dload</code>, <code>log_rate</code>, <code>log_dur</code>, <code>log_sinpkt</code>, <code>log_dinpkt</code>, <code>log_sjit</code>, <code>log_djit</code>
+  </div>
+  <p>
+    High-cardinality nominal variables (<code>proto</code>, <code>service</code>, <code>state</code>) are transformed into smooth continuous probability densities via <strong>Frequency Encoding</strong> with a minimum frequency cutoff ($min\_freq = 50$).
+  </p>
+
+  <!-- SECTION 4: ML & SHAP INTEGRATION -->
+  <div class="section-title">
+    <span class="section-badge">SEC 4</span>
+    Machine Learning Architecture & SHAP Explainability Engine
+  </div>
+
+  <div class="cards-grid-2">
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-attack">Modeling</span>
+        Soft-Voting Ensemble & Class Weighting
+      </div>
+      <div class="feature-card-body">
+        The detection engine fuses <strong>XGBoost</strong> (depth=7, lr=0.04) and <strong>LightGBM</strong> (leaves=127, min_child=20) through a calibrated soft-voting ensemble. To eliminate minority starvation (e.g., Worms with 44 samples), we implement <strong>Power Class Weighting</strong>:
+        <div class="math-formula">
+          w<sub>c</sub> = ( N / (C &middot; N<sub>c</sub>) )<sup>0.40</sup>
+        </div>
+        Achieves balanced decision boundaries without synthetic SMOTE artifacts.
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <span class="tag tag-attack">Explainability</span>
+        SHAP TreeExplainer & Local Attributions
+      </div>
+      <div class="feature-card-body">
+        For every flagged intrusion flow, <code>shap.TreeExplainer</code> computes exact game-theoretic Shapley values:
+        <div class="math-formula">
+          f(x) = &phi;<sub>0</sub> + &sum;<sub>i=1</sub><sup>M</sup> &phi;<sub>i</sub>(x)
+        </div>
+        Identifies the <strong>Top-3 Driver Features</strong> (e.g., elevated <code>sload_to_rate</code>, zero <code>dbytes</code>, extreme <code>ct_dst_sport_ltm</code>), rendering human-readable alert cards that eliminate black-box alert fatigue for SOC analysts.
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-section-title">End-to-End Pipeline Performance Matrix</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Pipeline Stage</th>
+        <th>Input Artifact</th>
+        <th>Output Artifact</th>
+        <th>Runtime Latency</th>
+        <th>Operational Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Simulation</strong></td>
+        <td>Network Topology</td>
+        <td><code>simulated_traffic.pcap</code></td>
+        <td>~1.2 seconds</td>
+        <td>Synthesizes bidirectional Ethernet frames with realistic attack injections.</td>
+      </tr>
+      <tr>
+        <td><strong>Flow Extraction</strong></td>
+        <td><code>simulated_traffic.pcap</code></td>
+        <td>36 NetFlow Records</td>
+        <td>~2.4 seconds</td>
+        <td>Reassembles TCP/UDP conversations into bidirectional 5-tuple statistical flows.</td>
+      </tr>
+      <tr>
+        <td><strong>Inference Engine</strong></td>
+        <td>36 NetFlow Records</td>
+        <td>Predictions + Confidences</td>
+        <td>~0.8 ms / flow</td>
+        <td>Applies 48 feature transformations and ensemble soft-voting classification.</td>
+      </tr>
+      <tr>
+        <td><strong>SHAP Attribution</strong></td>
+        <td>Flagged Attack Flow</td>
+        <td><code>shap_alerts/*.png</code></td>
+        <td>~3.7 seconds</td>
+        <td>Computes Shapley values and renders visual bar summary plots for SOC analysts.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Project Sign-off -->
+  <div style="margin-top: 10px; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 8px; color: #475569;">
+    <div><strong>Repository:</strong> github.com/axant4323/IDS-with-SHAP &bull; <strong>Status:</strong> Verified & Certified</div>
+    <div><strong>Lead Author:</strong> Akshant.A.A &bull; <strong>Engine:</strong> 100% Pure Python</div>
+  </div>
+
+  <div class="running-footer">
+    <div><strong>X-NIDS Research Project</strong> &bull; UNSW-NB15 Dataset Technical Reference</div>
+    <div>Page 5 of 5</div>
+  </div>
+</div>
+
+</body>
+</html>
